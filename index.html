@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Interativa do Êxodo: As Pragas e a Páscoa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Desert Neutrals -->
+    <!-- Application Structure Plan: The application is structured into thematic sections accessible via a fixed navigation bar for intuitive, non-linear exploration. The core is the 'As Pragas' section, designed as an interactive dashboard. Users can select a plague from a grid, which dynamically populates a detail panel. This structure was chosen to transform passive reading into active exploration, allowing users to easily compare plagues and understand their specific theological context (judged gods, distinction of Israel) without being overwhelmed by a wall of text. The flow encourages discovering connections between the plagues and their overarching purposes. -->
+    <!-- Visualization & Content Choices: Report Info: Details of each plague and its purpose. -> Goal: Organize, Compare, Inform. -> Viz/Presentation Method: An interactive grid of cards (HTML/Tailwind) representing each plague. Clicking a card updates a dedicated text panel. -> Interaction: On-click event to display detailed descriptions, associated judged gods, and biblical references. -> Justification: This method breaks down dense theological text into manageable, user-driven chunks, enhancing comprehension and engagement over a static list. It visually separates the overview from the details, improving clarity. -> Library/Method: Vanilla JavaScript for interaction logic, Tailwind CSS for layout and styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+        }
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #C05621;
+            border-bottom-color: #C05621;
+        }
+        .plague-card {
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            border: 1px solid #EAE0D5;
+        }
+        .plague-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .plague-card.active {
+            background-color: #D69F7E;
+            color: #FDFBF5;
+            border-color: #C05621;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF5] text-[#4A4A4A]">
+
+    <header class="bg-[#FDFBF5]/80 backdrop-blur-lg sticky top-0 z-50 border-b border-[#EAE0D5]">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-[#C05621]">Êxodo Interativo</h1>
+                <div class="hidden md:flex items-baseline space-x-4">
+                    <a href="#introducao" class="nav-link px-3 py-2 text-sm font-medium">Introdução</a>
+                    <a href="#pragas" class="nav-link px-3 py-2 text-sm font-medium">As Pragas</a>
+                    <a href="#propositos" class="nav-link px-3 py-2 text-sm font-medium">Os Propósitos</a>
+                    <a href="#pascoa" class="nav-link px-3 py-2 text-sm font-medium">A Páscoa</a>
+                    <a href="#reflexoes" class="nav-link px-3 py-2 text-sm font-medium">Reflexões</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-[#EAE0D5] text-[#4A4A4A] rounded-md p-2">
+                        <option value="#introducao">Introdução</option>
+                        <option value="#pragas">As Pragas</option>
+                        <option value="#propositos">Os Propósitos</option>
+                        <option value="#pascoa">A Páscoa</option>
+                        <option value="#reflexoes">Reflexões</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="introducao" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#3a2d24] leading-tight">As 10 Pragas e a Páscoa</h2>
+                <p class="mt-4 text-lg text-[#6B5E54] max-w-3xl mx-auto">Uma análise dos capítulos 7 a 12 de Êxodo, revelando os propósitos teológicos por trás da libertação de Israel do Egito.</p>
+            </div>
+            <div class="bg-white/50 p-8 rounded-lg shadow-sm border border-[#EAE0D5]">
+                <h3 class="text-2xl font-bold text-[#C05621] mb-4">O Chamado e a Missão</h3>
+                <p class="text-base leading-relaxed">
+                    No momento decisivo para cumprir a promessa feita a Abraão, Deus escolhe Moisés para liderar a libertação de Israel. Apesar de se sentir incapaz, Moisés é constituído como uma autoridade divina perante Faraó, com Arão como seu porta-voz. As pragas que se seguem não são meros desastres naturais, mas atos soberanos de Deus, projetados para demonstrar Seu poder, julgar os deuses do Egito e forçar a libertação de Seu povo, culminando na instituição da Páscoa. Este estudo explora como esses eventos transformaram a mentalidade de um povo escravo em uma nação vitoriosa.
+                </p>
+            </div>
+        </section>
+
+        <section id="pragas" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#3a2d24]">Explore as Pragas</h2>
+                <p class="mt-4 text-lg text-[#6B5E54]">Clique em uma praga para ver seus detalhes, o juízo divino associado e seu impacto.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div id="plagues-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-4">
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div id="plague-details" class="bg-white/50 p-6 md:p-8 rounded-lg shadow-sm border border-[#EAE0D5] min-h-[300px] sticky top-24">
+                        <div id="details-content" class="text-center flex flex-col justify-center items-center h-full">
+                            <span class="text-5xl mb-4">📜</span>
+                            <h3 class="text-xl font-bold text-[#3a2d24]">Selecione uma Praga</h3>
+                            <p class="text-[#6B5E54]">Escolha um dos eventos ao lado para carregar suas informações aqui.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="propositos" class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#3a2d24]">Os Três Propósitos Divinos</h2>
+                <p class="mt-4 text-lg text-[#6B5E54]">Entenda as razões teológicas fundamentais por trás das pragas.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white/50 p-6 rounded-lg shadow-sm border border-[#EAE0D5]">
+                    <h3 class="text-xl font-bold text-[#C05621] mb-3">1. Revelar o Poder de Deus</h3>
+                    <p class="text-sm leading-relaxed">O objetivo principal era que tanto os egípcios quanto os israelitas soubessem quem é o Senhor (YHWH). Cada praga foi uma demonstração inequívoca de Sua soberania sobre a natureza, a vida e os deuses falsos, estabelecendo que não há outro Deus além d'Ele.</p>
+                </div>
+                <div class="bg-white/50 p-6 rounded-lg shadow-sm border border-[#EAE0D5]">
+                    <h3 class="text-xl font-bold text-[#C05621] mb-3">2. Julgar os Deuses do Egito</h3>
+                    <p class="text-sm leading-relaxed">Cada praga foi um ataque direto a uma divindade egípcia, expondo sua impotência. Desde o deus do Nilo (Hapi) até o deus-sol (Rá), Deus sistematicamente desmantelou o panteão egípcio, provando que seus ídolos eram inúteis e que somente Ele detém o poder verdadeiro.</p>
+                </div>
+                <div class="bg-white/50 p-6 rounded-lg shadow-sm border border-[#EAE0D5]">
+                    <h3 class="text-xl font-bold text-[#C05621] mb-3">3. Distinguir o Povo de Israel</h3>
+                    <p class="text-sm leading-relaxed">A partir da quarta praga, Deus fez uma clara distinção, poupando Seu povo na terra de Gósen. Isso demonstrou Seu cuidado pactual e ensinou a Israel que sua segurança e identidade não vinham do Egito, mas de sua aliança exclusiva com o Senhor, seu protetor.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="pascoa" class="mb-16">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#3a2d24]">A Décima Praga e a Instituição da Páscoa</h2>
+                <p class="mt-4 text-lg text-[#6B5E54]">O clímax da libertação e o nascimento de um memorial eterno.</p>
+            </div>
+            <div class="bg-white/50 p-8 rounded-lg shadow-sm border border-[#EAE0D5] grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-[#C05621] mb-4">O Juízo Final e a Salvação pelo Sangue</h3>
+                    <p class="mb-4">A morte dos primogênitos foi a praga mais devastadora, quebrando definitivamente a resistência de Faraó. Foi um juízo direto contra a divindade do próprio Faraó, considerado um deus e protetor do Egito.</p>
+                    <p>No entanto, em meio ao juízo, Deus proveu um caminho de salvação: a Páscoa. Cada família israelita deveria sacrificar um cordeiro sem defeito e aplicar seu sangue nos umbrais das portas. O anjo da morte "passaria por cima" (Pessach) das casas marcadas, poupando os primogênitos. Este ato de fé e obediência foi o sinal da aliança e proteção divina.</p>
+                </div>
+                 <div class="text-center">
+                    <span class="text-8xl">🐑</span>
+                    <p class="mt-2 font-semibold text-[#6B5E54]">O Cordeiro Pascal: Símbolo da Redenção</p>
+                    <p class="text-sm text-[#6B5E54]">Um prenúncio do sacrifício de Cristo, o Cordeiro de Deus.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="reflexoes">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#3a2d24]">Reflexões Para os Dias Atuais</h2>
+                <p class="mt-4 text-lg text-[#6B5E54]">As lições do Êxodo que ressoam em nossa jornada de fé hoje.</p>
+            </div>
+            <div class="bg-white/50 p-8 rounded-lg shadow-sm border border-[#EAE0D5]">
+                <p class="leading-relaxed">A narrativa do Êxodo transcende a história antiga, oferecendo lições poderosas para a vida contemporânea. A teimosia de Faraó serve como um alerta sobre os perigos da dureza de coração e da resistência à vontade de Deus. As pragas podem ser vistas como uma contínua batalha contra as idolatrias modernas — materialismo, egoísmo, vícios — que nos escravizam. A libertação do Egito nos chama a buscar libertação dos nossos próprios "Egitos" pessoais e sociais. A Páscoa, com o Cordeiro imolado, continua a ser o símbolo máximo de esperança, proteção e renovação, apontando para a fé em Jesus como nosso refúgio e libertador definitivo.</p>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-[#3a2d24] text-[#EAE0D5] mt-16">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 Análise Interativa do Êxodo. Conteúdo adaptado para estudo e reflexão.</p>
+            <p class="mt-2 text-xs">Créditos do conteúdo original a Pr. Levi Alves e Trilha Ágios.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const plaguesData = [
+                { id: 1, name: "Águas em Sangue", icon: "💧", ref: "Êx 7:14-25", desc: "Toda a água do rio Nilo e dos reservatórios egípcios foi transformada em sangue, matando os peixes e tornando a água imprópria para consumo.", god: "Juízo sobre Hapi (deus do Nilo) e Osíris (cujo sangue era o Nilo).", dist: "Os israelitas tinham acesso à água potável." },
+                { id: 2, name: "Rãs", icon: "🐸", ref: "Êx 8:1-15", desc: "Uma infestação de rãs cobriu toda a terra do Egito, invadindo casas, quartos e fornos.", god: "Juízo sobre Heket (deusa com cabeça de rã, símbolo da fertilidade).", dist: "A praga afetou todo o Egito." },
+                { id: 3, name: "Piolhos", icon: "🐜", ref: "Êx 8:16-19", desc: "O pó da terra se transformou em piolhos que afligiram pessoas e animais. Os magos de Faraó não puderam replicar este milagre, reconhecendo o 'dedo de Deus'.", god: "Juízo sobre Geb (deus da terra).", dist: "A praga afetou todo o Egito." },
+                { id: 4, name: "Moscas", icon: "🪰", ref: "Êx 8:20-32", desc: "Grandes enxames de moscas invadiram as casas dos egípcios e a terra, mas a região de Gósen, onde os israelitas viviam, foi poupada.", god: "Juízo sobre Khepri (deus com cabeça de mosca).", dist: "Primeira praga com distinção clara: Israel foi poupado." },
+                { id: 5, name: "Morte do Gado", icon: "🐄", ref: "Êx 9:1-7", desc: "Uma peste mortal atingiu os rebanhos egípcios (cavalos, jumentos, camelos, bois e ovelhas), mas nenhum animal dos israelitas morreu.", god: "Juízo sobre Ápis (deus-touro) e Hathor (deusa-vaca).", dist: "Distinção clara: o gado de Israel foi protegido." },
+                { id: 6, name: "Úlceras", icon: "🔥", ref: "Êx 9:8-12", desc: "Cinzas de uma fornalha foram lançadas ao ar, causando úlceras e tumores dolorosos em egípcios e seus animais.", god: "Juízo sobre Ísis (deusa da medicina e da magia).", dist: "A praga afetou apenas os egípcios." },
+                { id: 7, name: "Saraiva", icon: "雹", ref: "Êx 9:13-35", desc: "A pior tempestade de granizo que o Egito já viu, misturada com fogo, destruiu plantações, árvores, pessoas e animais que estavam no campo. Gósen foi poupada.", god: "Juízo sobre Nut (deusa do céu) e Seth (deus das tempestades).", dist: "Distinção clara: não houve saraiva em Gósen." },
+                { id: 8, name: "Gafanhotos", icon: "🦗", ref: "Êx 10:1-20", desc: "Um enxame denso de gafanhotos devorou toda a vegetação que havia sobrevivido à saraiva, não deixando nada verde no Egito.", god: "Juízo sobre Senehem (deus protetor das colheitas).", dist: "A praga devastou o Egito, mas Israel foi preservado." },
+                { id: 9, name: "Trevas", icon: "🌑", ref: "Êx 10:21-29", desc: "Uma escuridão palpável cobriu o Egito por três dias, tão densa que ninguém podia se mover. No entanto, havia luz nas habitações dos israelitas.", god: "Juízo sobre Rá (o deus-sol, a principal divindade egípcia).", dist: "Distinção clara: os israelitas tinham luz." },
+                { id: 10, name: "Morte dos Primogênitos", icon: "💀", ref: "Êx 11:1–12:30", desc: "À meia-noite, todos os primogênitos no Egito, desde o filho de Faraó até o filho do prisioneiro, e as primeiras crias dos animais, morreram.", god: "Juízo final sobre Faraó (considerado um deus) e Osíris (juiz dos mortos).", dist: "Os israelitas foram poupados pela fé, através do sangue do cordeiro pascal." }
+            ];
+
+            const grid = document.getElementById('plagues-grid');
+            const detailsPanel = document.getElementById('plague-details');
+            const detailsContent = document.getElementById('details-content');
+
+            plaguesData.forEach(plague => {
+                const card = document.createElement('div');
+                card.className = 'plague-card bg-white/50 p-4 rounded-lg shadow-sm cursor-pointer text-center';
+                card.dataset.id = plague.id;
+                card.innerHTML = `
+                    <span class="text-4xl">${plague.icon}</span>
+                    <p class="mt-2 text-sm font-semibold">${plague.id}. ${plague.name}</p>
+                `;
+                card.addEventListener('click', () => displayPlagueDetails(plague.id));
+                grid.appendChild(card);
+            });
+
+            function displayPlagueDetails(id) {
+                const plague = plaguesData.find(p => p.id === id);
+                if (!plague) return;
+
+                document.querySelectorAll('.plague-card').forEach(c => {
+                    c.classList.remove('active');
+                    if (c.dataset.id == id) {
+                        c.classList.add('active');
+                    }
+                });
+                
+                detailsContent.innerHTML = `
+                    <div class="fade-in text-left w-full">
+                        <span class="text-6xl mb-4 block text-center">${plague.icon}</span>
+                        <h3 class="text-2xl font-bold text-[#3a2d24] text-center mb-1">${plague.name}</h3>
+                        <p class="text-center text-sm text-[#C05621] font-semibold mb-4">${plague.ref}</p>
+                        <p class="text-base text-[#4A4A4A] mb-4">${plague.desc}</p>
+                        <div class="border-t border-[#EAE0D5] pt-4">
+                            <p class="text-sm mb-2"><strong class="font-semibold text-[#3a2d24]">Juízo Divino:</strong> ${plague.god}</p>
+                            <p class="text-sm"><strong class="font-semibold text-[#3a2d24]">Distinção e Proteção:</strong> ${plague.dist}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const mobileNav = document.getElementById('mobile-nav');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                        mobileNav.value = `#${entry.target.id}`;
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView();
+                });
+            });
+
+            mobileNav.addEventListener('change', (e) => {
+                document.querySelector(e.target.value).scrollIntoView();
+            });
+        });
+    </script>
+</body>
+</html>
+
